@@ -4084,6 +4084,241 @@
                 "title": "Get Policy"
             },
             "versions": "EQ(*)"
+        },
+        {
+            "action": "approve hash",
+            "description": "Approve hash",
+            "verbose": "This parameter takes a JSON dictionary with the format of the policy field seen <a href=\"https://developer.carbonblack.com/reference/carbon-black-cloud/platform/latest/reputation-override-api\">here</a>. This Action requires Custom API Key and Custom API Connector ID.",
+            "type": "generic",
+            "identifier": "approve_hash",
+            "read_only": false,
+            "parameters": {
+                "comment": {
+                    "description": "Comment",
+                    "data_type": "string",
+                    "required": false,
+                    "order": 2
+                },
+                "sha256_hash": {
+                    "description": "SHA-256",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "filename": {
+                    "description": "Filename",
+                    "data_type": "string",
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_name": "Status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.comment",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.success",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Policy id: 74507"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "block hash",
+            "description": "Block hash",
+            "verbose": "This parameter takes a JSON dictionary with the format of the policy field seen <a href=\"https://developer.carbonblack.com/reference/carbon-black-cloud/platform/latest/reputation-override-api\">here</a>. This Action requires Custom API Key and Custom API Connector ID.",
+            "type": "generic",
+            "identifier": "block_hash",
+            "read_only": false,
+            "parameters": {
+                "comment": {
+                    "description": "Comment",
+                    "data_type": "string",
+                    "required": false,
+                    "order": 2
+                },
+                "sha256_hash": {
+                    "description": "SHA-256",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "filename": {
+                    "description": "Filename",
+                    "data_type": "string",
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_name": "Status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.comment",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.success",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Policy id: 74507"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete hash",
+            "description": "Delete hash override",
+            "verbose": "This parameter takes a JSON dictionary with the format of the policy field seen <a href=\"https://developer.carbonblack.com/reference/carbon-black-cloud/platform/latest/reputation-override-api\">here</a>. This Action requires Custom API Key and Custom API Connector ID.",
+            "type": "generic",
+            "identifier": "delete_hash",
+            "read_only": false,
+            "parameters": {
+                "id": {
+                    "description": "Id",
+                    "data_type": "string",
+                    "order": 0
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_name": "Status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.comment",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.success",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Policy id: 74507"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
         }
     ],
     "pip_dependencies": {

@@ -813,6 +813,48 @@ class CarbonBlackDefenseConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, CBD_POLICY_RETRIEVED_SUCCESS)
 
+    def _handle_approve_hash(self, param):
+        self._handle_add_hash(param, "WHITE_LIST")
+
+    def _handle_block_hash(self, param):
+        self._handle_add_hash(param, "BLACK_LIST")
+
+    def _handle_add_hash(self, param, override_list):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        body = {
+            "description": param['comment'],
+            "override_list": override_list,
+            "override_type": "SHA256",
+            "sha256_hash": param['sha256_hash'],
+            "filename": param['filename']
+        }
+
+        add_reputation_override_api = CBD_ADD_REPUTATION_OVERRIDE_API.format(self._org_key)
+        ret_val, response = self._make_rest_call(add_reputation_override_api, action_result, data=body, method='post', is_new_api=True)
+
+        if phantom.is_fail(ret_val):
+            return ret_val
+        action_result.add_data(response)
+        return action_result.set_status(phantom.APP_SUCCESS, f"{CBD_ADDED_HASH} to the {override_list}. id = {response['id']}")
+        # TODO: Leave "override_list" in as the actual list names are WHITE_LIST and BLACK_LIST?
+        # Map to some more PC names or just leave it out completely?
+
+    def _handle_delete_hash(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        hash_id = param['id']
+
+        delete_reputation_override_api = CBD_DELETE_REPUTATION_OVERRIDE_API.format(self._org_key, hash_id)
+        ret_val, response = self._make_rest_call(delete_reputation_override_api, action_result, method='delete', is_new_api=True)
+
+        if phantom.is_fail(ret_val):
+            return ret_val
+        action_result.add_data(response)
+        return action_result.set_status(phantom.APP_SUCCESS, CBD_DELETED_HASH)
+
     def handle_action(self, param):
 
         ret_val = phantom.APP_SUCCESS
@@ -852,6 +894,12 @@ class CarbonBlackDefenseConnector(BaseConnector):
             ret_val = self._handle_get_policy(param)
         elif action_id == 'update_policy':
             ret_val = self._handle_update_policy(param)
+        elif action_id == 'approve_hash':
+            ret_val = self._handle_approve_hash(param)
+        elif action_id == 'block_hash':
+            ret_val = self._handle_block_hash(param)
+        elif action_id == 'delete_hash':
+            ret_val = self._handle_delete_hash(param)
 
         return ret_val
 
