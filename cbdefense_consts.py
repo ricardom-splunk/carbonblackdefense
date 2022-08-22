@@ -35,6 +35,7 @@ CBD_ADD_REPUTATION_OVERRIDE_API = "/appservices/v6/orgs/{0}/reputations/override
 CBD_DELETE_REPUTATION_OVERRIDE_API = "/appservices/v6/orgs/{0}/reputations/overrides/{1}"
 CBD_ADDED_HASH = "Hash successfully added"
 CBD_DELETED_HASH = "Hash successfully removed"
+CBD_QUARANTINE_ENDPOINT_API = "/appservices/v6/orgs/{0}/device_actions"
 CBD_DEFAULT_REQUEST_TIMEOUT = 30  # in seconds
 CBD_STATE_FILE_CORRUPT_ERR = (
     "Error occurred while loading the state file due to its unexpected format. "

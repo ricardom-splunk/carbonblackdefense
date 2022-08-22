@@ -813,12 +813,6 @@ class CarbonBlackDefenseConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, CBD_POLICY_RETRIEVED_SUCCESS)
 
-    def _handle_approve_hash(self, param):
-        self._handle_add_hash(param, "WHITE_LIST")
-
-    def _handle_block_hash(self, param):
-        self._handle_add_hash(param, "BLACK_LIST")
-
     def _handle_add_hash(self, param, override_list):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -854,6 +848,26 @@ class CarbonBlackDefenseConnector(BaseConnector):
             return ret_val
         action_result.add_data(response)
         return action_result.set_status(phantom.APP_SUCCESS, CBD_DELETED_HASH)
+
+    def _handle_set_endpoint_quarantine(self, param, toggle):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        body = {
+            "action_type": "QUARANTINE",
+            "device_id": [param['device_id']],
+            "options": {
+                "toggle": toggle
+            }
+        }
+
+        set_endpoint_quarantine = CBD_QUARANTINE_ENDPOINT_API.format(self._org_key)
+        ret_val, response = self._make_rest_call(set_endpoint_quarantine, action_result, data=body, method='post', is_new_api=True)
+
+        if phantom.is_fail(ret_val):
+            return ret_val
+        action_result.add_data(response)
+        return action_result.set_status(phantom.APP_SUCCESS, f"Device {param['device_id']} quarantine status changed to {toggle}")
 
     def handle_action(self, param):
 
@@ -895,12 +909,15 @@ class CarbonBlackDefenseConnector(BaseConnector):
         elif action_id == 'update_policy':
             ret_val = self._handle_update_policy(param)
         elif action_id == 'approve_hash':
-            ret_val = self._handle_approve_hash(param)
+            ret_val = self._handle_add_hash(param, "WHITE_LIST")
         elif action_id == 'block_hash':
-            ret_val = self._handle_block_hash(param)
+            ret_val = self._handle_add_hash(param, "BLACK_LIST")
         elif action_id == 'delete_hash':
             ret_val = self._handle_delete_hash(param)
-
+        elif action_id == 'quarantine_endpoint':
+            ret_val = self._handle_set_endpoint_quarantine(param, "ON")
+        elif action_id == 'unquarantine_endpoint':
+            ret_val = self._handle_set_endpoint_quarantine(param, "OFF")
         return ret_val
 
 
