@@ -11,7 +11,7 @@
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) 2018-2022 Splunk Inc.",
-    "app_version": "2.2.1-fdse",
+    "app_version": "2.2.2-fdse",
     "utctime_updated": "2022-02-09T04:16:31.000000Z",
     "package_name": "phantom_carbonblackdefense",
     "main_module": "cbdefense_connector.py",
@@ -4403,6 +4403,82 @@
                     "description": "Device ID",
                     "data_type": "string",
                     "order": 0
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_name": "Status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.comment",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.success",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Policy id: 74507"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "kill process",
+            "description": "Kill Process",
+            "verbose": "This action takes the PID of the process to be killed as an input parameter. This Action requires Custom API Key and Custom API Connector ID.",
+            "type": "generic",
+            "identifier": "kill_process",
+            "read_only": false,
+            "parameters": {
+                "device_id": {
+                    "description": "Device ID",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "pid": {
+                    "description": "PID",
+                    "data_type": "string",
+                    "order": 1
                 }
             },
             "output": [

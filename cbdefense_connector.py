@@ -869,6 +869,66 @@ class CarbonBlackDefenseConnector(BaseConnector):
         action_result.add_data(response)
         return action_result.set_status(phantom.APP_SUCCESS, f"Device {param['device_id']} quarantine status changed to {toggle}")
 
+    def _handle_kill_process(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Open a session for a specific device or get an existing session_id for that device
+        # Request to open the session or retrieve an already ACTIVE session
+        endpoint = f"{CBD_SESSION_API.format(self._org_key)}"
+        body = {
+            "device_id": param['device_id']
+        }
+        ret_val, response = self._make_rest_call(endpoint, action_result, data=body, method="post", is_new_api=True)
+        if phantom.is_fail(ret_val):
+            self.save_progress(f"Could not open or find session for device {param['device_id']}")
+            return ret_val
+
+        session_id = response.get('id')
+        action_result = self.add_action_result(ActionResult({"session_id": session_id}))
+
+        # We can immediately send the command request
+        endpoint = f"{CBD_SESSION_API.format(self._org_key)}/{session_id}/commands"
+        body = {
+            "name": "kill",
+            "pid": param['pid']
+        }
+        ret_val, response = self._make_rest_call(endpoint, action_result, data=body, method="post", is_new_api=True)
+        if phantom.is_fail(ret_val):
+            self.save_progress(f"Could not send command {body['name']} {body['pid']} to device {param['device_id']}")
+            return ret_val
+
+        command_id = response.get('id')
+
+        # Then we can start polling the API until we get a proper response for the command we sent
+        MAX_RETRIES = 3
+        retries = 0
+        interval = 5  # seconds
+        endpoint = f"{CBD_SESSION_API.format(self._org_key)}/{session_id}/commands/{command_id}"
+        while retries < MAX_RETRIES:
+            self.save_progress(f"Attempt {retries+1} of {MAX_RETRIES}")
+            ret_val, response = self._make_rest_call(endpoint, action_result, method="get", is_new_api=True)
+            if response.get('status') == "COMPLETE":
+                break
+            if response.get('status') == "ERROR":
+                self.save_progress(f"ERROR: Couldn't kill process {body['pid']}")
+                ret_val = False
+                break
+            retries += 1
+            time.sleep(interval)
+        else:
+            self.save_progress("Timeout or failed after max. number of attempts to get the command result.")
+            ret_val = False
+
+        if phantom.is_fail(ret_val):
+            self.save_progress(f"Couldn't fetch output of command \"{body['name']} {body['pid']}\" on device {param['device_id']}")
+            return ret_val
+
+        endpoint = f"{CBD_SESSION_API.format(self._org_key)}/{session_id}"
+        ret_val, response = self._make_rest_call(endpoint, action_result, method="delete", is_new_api=True)
+        action_result.add_data(response)
+        return action_result.set_status(phantom.APP_SUCCESS, f"Killed: {param['pid']}")
+
     def handle_action(self, param):
 
         ret_val = phantom.APP_SUCCESS
@@ -918,6 +978,8 @@ class CarbonBlackDefenseConnector(BaseConnector):
             ret_val = self._handle_set_endpoint_quarantine(param, "ON")
         elif action_id == 'unquarantine_endpoint':
             ret_val = self._handle_set_endpoint_quarantine(param, "OFF")
+        elif action_id == 'kill_process':
+            ret_val = self._handle_kill_process(param)
         return ret_val
 
 
